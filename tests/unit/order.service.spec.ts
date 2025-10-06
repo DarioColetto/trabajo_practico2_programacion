@@ -10,7 +10,15 @@ describe('OrderService domain rules', () => {
       address: 'Calle Larga 1234',
       items: [{ size: 'M', toppings: ['a','b','c'] }]
     });
-    expect(o.total).toBeGreaterThan(0);
+    expect(o.total).toBe(14.5)
+  });
+
+  it('Adress mayor a 10 caracteres', () => {
+    const o = OrderService.create({
+      address: 'Calle Larga 1234',
+      items: [{ size: 'S', toppings: ['a'] }]
+    });
+    expect(o.address.length).toBeGreaterThan(10);
   });
 
   it('Error cuando se cancela un pedido enviado', () => {
