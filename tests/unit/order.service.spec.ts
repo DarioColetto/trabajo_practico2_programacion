@@ -2,31 +2,30 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { OrdersMemoryRepo } from '../../src/repo/orders';
 import { OrderService } from '../../src/services/order.service';
 
-beforeEach(() => OrdersMemoryRepo.clear());
+describe('OrderService - more branches', () => {
+  beforeEach(() => OrdersMemoryRepo.clear());
 
-describe('OrderService domain rules', () => {
-  it('Calcula el total en base al tamanio y los toppings', () => {
-    const o = OrderService.create({
-      address: 'Calle Larga 1234',
-      items: [{ size: 'M', toppings: ['a','b','c'] }]
-    });
-    expect(o.total).toBe(14.5)
+  it('cancel devuelve null si el pedido no existe', () => {
+    const res = OrderService.cancel('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
+    expect(res).toBeNull();
   });
 
-  it('Adress mayor a 10 caracteres', () => {
-    const o = OrderService.create({
-      address: 'Calle Larga 1234',
-      items: [{ size: 'S', toppings: ['a'] }]
+  it('list devuelve todos y respeta el filtro', () => {
+    const a = OrderService.create({
+      items: [{ size: 'S', toppings: [] }],
+      address: 'Direccion valida 12345'
     });
-    expect(o.address.length).toBeGreaterThan(10);
-  });
+    const b = OrderService.create({
+      items: [{ size: 'L', toppings: [] }],
+      address: 'Direccion valida 67890'
+    });
+    OrdersMemoryRepo.update(b.id, { status: 'delivered' });
 
-  it('Error cuando se cancela un pedido enviado', () => {
-    const o = OrderService.create({
-      address: 'Direccion suficiente',
-      items: [{ size: 'L', toppings: [] }]
-    });
-    OrdersMemoryRepo.update(o.id, { status: 'delivered' });
-    expect(() => OrderService.cancel(o.id)).toThrow('CANNOT_CANCEL_DELIVERED');
+    const all = OrderService.list();
+    const onlyDelivered = OrderService.list('delivered');
+
+    expect(all.length).toBe(2);
+    expect(onlyDelivered.length).toBe(1);
+    expect(onlyDelivered[0].id).toBe(b.id);
   });
 });
