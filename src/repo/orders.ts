@@ -15,5 +15,5 @@ export const OrdersMemoryRepo = {
     db.set(id, updated);
     return updated;
   },
-  clear() { db.clear(); }
+  clear() { db.clear(); } // CREO QUE NO SE VA A USAR.
 };

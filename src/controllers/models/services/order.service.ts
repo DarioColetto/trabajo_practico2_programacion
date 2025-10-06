@@ -24,6 +24,8 @@ export const OrderService = {
     return OrdersMemoryRepo.get(id);
   },
 
+  //getAll
+
   cancel(id: string): Order | null {
     const found = OrdersMemoryRepo.get(id);
     if (!found) return null;
@@ -32,7 +34,7 @@ export const OrderService = {
       // devolveremos control al controlador para 409
       throw new Error('CANNOT_CANCEL_DELIVERED');
     }
-    return OrdersMemoryRepo.update(id, { status: 'canceled' });
+    return OrdersMemoryRepo.update(id, { status: 'canceled' }); // No borra, solo actualiza estado.
   },
 
   list(status?: Order['status']) {
